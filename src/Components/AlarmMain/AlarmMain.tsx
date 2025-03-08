@@ -16,6 +16,9 @@ const AlarmMain = () => {
 
     const [isError, setIsError] = useState('')
 
+    const [count, setCount] = useState(0)
+    const [ipUser, setIpUser] = useState("")
+
     useEffect(() => {
         let interval: number | undefined;
         if (isCancelopen) {
@@ -31,6 +34,19 @@ const AlarmMain = () => {
         return () => {clearInterval(interval);}
     },[isCancelopen, hourAlarm, minutesAlarm, audio])
 
+    useEffect(() => {
+        if(count > 5 ){
+            fetch('https://api.ipify.org?format=json')
+                .then(res => res.json())
+                .then(data => {
+                    setIpUser(data.ip)
+                    if (ipUser){
+                        setIsError(`Опа дружок ${ipUser}`)
+                    }
+                });
+        }
+    }, [count]);
+
 
     const handleSetTimer = () => {
         const hours = Number(hourAlarm)
@@ -38,6 +54,7 @@ const AlarmMain = () => {
         if (hourAlarm.trim() === '' || minutesAlarm.trim() === '') {
             setIsError("Введи время долбоеб")
             console.log("введи время долбоеб")
+            setCount((prev)=>prev + 1)
             return;
         }
 
@@ -89,7 +106,8 @@ const AlarmMain = () => {
                         <button
                             onClick={handleSetTimer}
                             className={s.buttonAlarm}
-                        >Подтвердить</button>
+                        >Подтвердить
+                        </button>
                     </div>
                 </div>
             }
