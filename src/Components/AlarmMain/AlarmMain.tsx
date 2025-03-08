@@ -4,6 +4,12 @@ import defaultSong from '../../assets/lezginka.mp3'
 import song1 from '../../assets/shaman.mp3'
 import song2 from '../../assets/gimn.mp3'
 
+
+interface Song {
+    id: number;
+    name: string;
+    url: string}
+
 const songs = [
     {id: 1, name: 'SHAMAN - Я РУССКИЙ', url: song1},
     {id: 2, name: 'ГИМН РОССИИ', url: song2},
@@ -32,7 +38,7 @@ const AlarmMain = () => {
 
 
 
-    const handleSongSelect = (song) => {
+    const handleSongSelect = (song:Song) => {
         audio.pause(); // Остановить текущее воспроизведение
         audio.currentTime = 0;
         setSelectedSong(song)
