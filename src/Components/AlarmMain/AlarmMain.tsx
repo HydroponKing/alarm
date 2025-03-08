@@ -1,7 +1,20 @@
 import s from './AlarmMain.module.css';
 import {useEffect, useState} from "react";
-import alarmSound from '../../assets/lezginka.mp3'
+import defaultSong from '../../assets/lezginka.mp3'
+import song1 from '../../assets/shaman.mp3'
+import song2 from '../../assets/gimn.mp3'
 
+
+interface Song {
+    id: number;
+    name: string;
+    url: string}
+
+const songs = [
+    {id: 1, name: 'SHAMAN - Я РУССКИЙ', url: song1},
+    {id: 2, name: 'ГИМН РОССИИ', url: song2},
+    {id: 3, name: 'ЛИЗГИНКА (стандарт)', url: defaultSong, isDefault: true},
+]
 
 
 const AlarmMain = () => {
@@ -12,15 +25,68 @@ const AlarmMain = () => {
     const [isTimerOpen, setIsTimerOpen] = useState(true)
     const [isCancelopen, setIsCancelopen] = useState(false)
 
-    const [audio] = useState(new Audio(alarmSound))
+    const [selectedSong, setSelectedSong] = useState(songs.find(song => song.isDefault) || songs[0])
+    const [audio, setAudio] = useState<HTMLAudioElement>(new Audio(selectedSong.url));
+    const [isPlaying, setIsPlaying] = useState(false)
+
 
     const [isError, setIsError] = useState('')
 
     const [count, setCount] = useState(0)
+    const [trigger, setTrigger] = useState(false)
     const [ipUser, setIpUser] = useState("")
 
+
+
+    const handleSongSelect = (song:Song) => {
+        audio.pause(); // Остановить текущее воспроизведение
+        audio.currentTime = 0;
+        setSelectedSong(song)
+        const newAudio = new Audio(song.url)
+        setAudio(newAudio)
+        setIsPlaying(false)
+    }
+
+    const togglePreview = () => {
+        if (isPlaying) {
+            audio.pause()
+            audio.currentTime = 0
+        }else {
+            audio.play().catch(error => {
+                console.log('ошибка чота тут во- ', error)
+            })
+        }
+        setIsPlaying(!isPlaying)
+    }
+
+    const handleSetTimer = () => {
+        const hours = Number(hourAlarm)
+        const minutes = Number(minutesAlarm)
+        if (hourAlarm.trim() === '' || minutesAlarm.trim() === '') {
+            setIsError("Пожалуйста, введите корректное время")
+            setCount((prev)=>prev + 1)
+            return;
+        }
+
+        if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59 ) {
+            setIsTimerOpen(false);
+            setIsCancelopen(true);
+        }else {
+            setIsError("Введи нормально пж")
+        }
+    }
+
+    const handleClearTimer = () => {
+        audio.pause()
+        audio.currentTime = 0
+        setIsTimerOpen(true);
+        setIsCancelopen(false);
+        setHourAlarm('')
+        setMinutesAlarm('')
+    }
+
     useEffect(() => {
-        let interval: number | undefined;
+        let interval: ReturnType<typeof setInterval>;
         if (isCancelopen) {
            interval = setInterval(()=>{
                 const now = new Date();
@@ -40,41 +106,20 @@ const AlarmMain = () => {
                 .then(res => res.json())
                 .then(data => {
                     setIpUser(data.ip)
-                    if (ipUser){
-                        setIsError(`Опа дружок ${ipUser}`)
+                    setTrigger(true)
+                    if (trigger){
+                        setIsError(`Опа ${ipUser}`)
                     }
                 });
         }
-    }, [count]);
+    }, [count, trigger]);
 
-
-    const handleSetTimer = () => {
-        const hours = Number(hourAlarm)
-        const minutes = Number(minutesAlarm)
-        if (hourAlarm.trim() === '' || minutesAlarm.trim() === '') {
-            setIsError("Введи время долбоеб")
-            console.log("введи время долбоеб")
-            setCount((prev)=>prev + 1)
-            return;
+    useEffect(() => {
+        return () => {
+            audio.pause()
+            audio.currentTime = 0
         }
-
-        if (hours >= 0 && hours < 23 && minutes >= 0 && minutes <= 59 ) {
-            setIsTimerOpen(false);
-            setIsCancelopen(true);
-        }else {
-            setIsError("Введи нормально пж")
-            console.log('Ошибка времени ты ебень блять даун просто пиздец')
-        }
-    }
-
-    const handleClearTimer = () => {
-        audio.pause()
-        audio.currentTime = 0
-        setIsTimerOpen(true);
-        setIsCancelopen(false);
-        setHourAlarm('')
-        setMinutesAlarm('')
-    }
+    }, []);
 
     return (
         <div>
@@ -96,6 +141,35 @@ const AlarmMain = () => {
                                placeholder={"мин"}
                                onChange={(event) => setMinutesAlarm(event.target.value)}
                         />
+                    </div>
+                    <div>
+                        {isTimerOpen && (
+                            <div className={s.songSelection}>
+                                <h3>Выберите мелодию</h3>
+                                <ul className={s.songsList}>
+                                    {songs.map((song) => (
+                                        <li
+                                        key={song.id}
+                                        onClick={()=>handleSongSelect(song)}
+                                        className={`${s.songItem} ${selectedSong.id === song.id ? s.selected : ''}`}
+                                        >
+                                            {song.name}
+                                            {selectedSong.id === song.id && (
+                                                <button
+                                                onClick={(e)=>{
+                                                    e.stopPropagation()
+                                                    togglePreview()
+                                                }}
+                                                className={s.previewButton}
+                                                >
+                                                    {isPlaying ? '⏸' : '▶'}
+                                                </button>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </div>
                     {isError &&
                         <div className={s.errorBlock}>

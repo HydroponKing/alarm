@@ -73,3 +73,39 @@
     background-color: #585858;
 
 }
+
+.songsList {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.songItem {
+    padding: 10px;
+    margin: 5px 0;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 250px;
+    height: 40px;
+}
+
+.songItem:hover {
+    background-color: rgba(245, 245, 245, 0.07);
+}
+
+.selected {
+    background-color: rgba(227, 242, 253, 0.04);
+    border-color: #2196F3;
+}
+
+.previewButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 16px;
+}
