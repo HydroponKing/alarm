@@ -1,0 +1,75 @@
+.mainContainerAlarm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.timeMessageBlock{
+    font-size: 20px;
+    text-align: center;
+    align-items: center;
+}
+
+.timeMessageTimeContainer{
+    display: flex;
+    justify-content: center;
+}
+.timeMessageTime{
+    font-size: 28px;
+    background-color: #383838;
+    width: 120px;
+    border-radius: 15px;
+
+}
+
+.alarmInputs{
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+.inputTime{
+    font-size: 32px;
+    width: 60px;
+    height: 40px;
+    border: none;
+    background: #303030;
+    border-radius: 10px;
+}
+.inputTime::placeholder{
+    font-size: 24px;
+    text-align: center;
+}
+
+.inputTime::-webkit-outer-spin-button,
+.inputTime::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.inputTime[type=number] {
+    -moz-appearance: textfield;
+}
+
+.errorBlock{
+    background: rgba(231, 76, 60, 0.19);
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+}
+.errorText{
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.buttonAlarm{
+    background: #444444;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    transition: background 0.2s ease-in-out;
+    margin-top: 20px;
+    font-size: 20px;
+}
+.buttonAlarm:hover{
+    background-color: #585858;
+
+}
